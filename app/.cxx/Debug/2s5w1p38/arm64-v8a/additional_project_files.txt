@@ -1,0 +1,4 @@
+C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\deps\raylib\src\raylib.h
+C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\deps\raylib\src\rcamera.h
+C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\deps\raylib\src\rlgl.h
+C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\deps\raylib\src\raymath.h
