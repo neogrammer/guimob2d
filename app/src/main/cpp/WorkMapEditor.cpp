@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 
 static std::string ReadWholeTextFile(const char* path)
 {
@@ -54,7 +55,7 @@ bool WorkMapEditor::LoadFromFile(const char* mapPath)
         m_HasTilesetTexture = false;
     }
 
-    std::string tilesetPath = std::string("textures/tilesets/") + m_TilesetFileName;
+    std::string tilesetPath = std::string("textures/tilesets/spritesheet1.png");
     m_TilesetTexture = LoadTexture(tilesetPath.c_str());
     m_HasTilesetTexture = (m_TilesetTexture.id != 0);
 
@@ -154,6 +155,35 @@ std::string WorkMapEditor::SerializeText() const {
     return out.str();
 }
 
+void WorkMapEditor::ClampMapOffset()
+{
+    // First version: clamp only for grid mode.
+    // Isometric can still pan, but we won't try to smart-clamp/cull it here.
+    if (m_DrawIsometric)
+    {
+        RecomputeOrigin();
+        return;
+    }
+
+    const float screenW = (float)GetScreenWidth();
+    const float screenH = (float)GetScreenHeight();
+
+    const float mapPixelW = (float)(m_MapWidth * m_TileSize);
+    const float mapPixelH = (float)(m_MapHeight * m_TileSize);
+
+    float minX = screenW - mapPixelW;
+    float minY = screenH - mapPixelH;
+
+    // If the map is smaller than the screen, keep it anchored at 0.
+    if (mapPixelW <= screenW) minX = 0.0f;
+    if (mapPixelH <= screenH) minY = 0.0f;
+
+    m_MapOffset.x = std::clamp(m_MapOffset.x, minX, 0.0f);
+    m_MapOffset.y = std::clamp(m_MapOffset.y, minY, 0.0f);
+
+    RecomputeOrigin();
+}
+
 void WorkMapEditor::RecomputeOrigin()
 {
     m_MapOrigin.x = m_MapOffset.x;
@@ -241,11 +271,59 @@ Vector2 WorkMapEditor::GetTileDrawPosition(int x, int y) const
             m_MapOrigin.y + yIso
     };
 }
-
 void WorkMapEditor::DrawMap() const
 {
     if (!m_HasTilesetTexture) return;
 
+    // Fast visible-only path for normal grid mode
+    if (!m_DrawIsometric)
+    {
+        const float tileW = (float)m_TileSize;
+        const float tileH = (float)m_TileSize;
+
+        const int startX = std::max(0, (int)floorf((-m_MapOrigin.x) / tileW));
+        const int startY = std::max(0, (int)floorf((-m_MapOrigin.y) / tileH));
+
+        const int endX = std::min(
+                m_MapWidth,
+                (int)ceilf(((float)GetScreenWidth() - m_MapOrigin.x) / tileW) + 1
+        );
+
+        const int endY = std::min(
+                m_MapHeight,
+                (int)ceilf(((float)GetScreenHeight() - m_MapOrigin.y) / tileH) + 1
+        );
+
+        for (int y = startY; y < endY; ++y)
+        {
+            for (int x = startX; x < endX; ++x)
+            {
+                const int tileIndex = m_Tiles[FlatIndex(x, y)];
+                Rectangle src = GetSrcRectForTile(tileIndex);
+
+                Vector2 pos = GetTileDrawPosition(x, y);
+
+                Rectangle dst{};
+                dst.x = pos.x;
+                dst.y = pos.y;
+                dst.width = (float)m_TileSize;
+                dst.height = (float)m_TileSize;
+
+                DrawTexturePro(
+                        m_TilesetTexture,
+                        src,
+                        dst,
+                        Vector2{ 0.0f, 0.0f },
+                        0.0f,
+                        WHITE
+                );
+            }
+        }
+
+        return;
+    }
+
+    // Existing full draw for isometric mode
     for (int y = 0; y < m_MapHeight; ++y)
     {
         for (int x = 0; x < m_MapWidth; ++x)
@@ -258,7 +336,7 @@ void WorkMapEditor::DrawMap() const
             Rectangle dst{};
             dst.x = pos.x;
             dst.y = pos.y;
-            dst.width  = (float)m_TileSize;
+            dst.width = (float)m_TileSize;
             dst.height = (float)m_TileSize;
 
             DrawTexturePro(
@@ -335,6 +413,16 @@ void WorkMapEditor::DrawEditorUI()
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoSavedSettings;
 
+    if (ImGui::Button("Fill Visible Defaults", ImVec2(-1.0f, 48.0f)))
+    {
+        const int changed = FillVisibleDefaultTiles();
+
+        if (changed > 0)
+            m_LastSaveMessage = "Filled " + std::to_string(changed) + " visible default tiles.";
+        else
+            m_LastSaveMessage = "No visible default tiles to fill.";
+    }
+
     ImGui::Begin("Tile Editor###tile_editor", nullptr, flags);
 
     ImGui::Text("Tileset: %s", m_TilesetFileName.c_str());
@@ -342,8 +430,6 @@ void WorkMapEditor::DrawEditorUI()
     ImGui::Text("Tile size: %d", m_TileSize);
     ImGui::Text("Map size: %d x %d", m_MapWidth, m_MapHeight);
     ImGui::Text("Default index: %d", m_DefaultIndex);
-
-    ImGui::Separator();
 
     ImGui::SliderInt("Index", &m_SelectedIndex, 0, MaxTileIndex());
     ImGui::InputInt("Set index", &m_SelectedIndex, 1, 10);
@@ -363,6 +449,70 @@ void WorkMapEditor::DrawEditorUI()
 
     ClampSelectedIndex();
 
+//    ImGui::Separator();
+//    ImGui::Text("Selected tile: %d", m_SelectedIndex);
+//    if (m_HasTilesetTexture)
+//    {
+//        Rectangle src = GetSrcRectForTile(m_SelectedIndex);
+//
+//        ImVec2 uv0(
+//                src.x / (float)m_TilesetTexture.width,
+//                src.y / (float)m_TilesetTexture.height
+//        );
+//
+//        ImVec2 uv1(
+//                (src.x + src.width) / (float)m_TilesetTexture.width,
+//                (src.y + src.height) / (float)m_TilesetTexture.height
+//        );
+//
+//        const ImVec2 previewSize(96.0f, 96.0f);
+//        const ImVec2 previewMin = ImGui::GetCursorScreenPos();
+//        const ImVec2 previewMax(previewMin.x + previewSize.x, previewMin.y + previewSize.y);
+//
+//        ImGui::InvisibleButton("##selected_tile_preview", previewSize);
+//
+//        ImDrawList* drawList = ImGui::GetWindowDrawList();
+//        drawList->AddImage(
+//                (ImTextureID)(intptr_t)m_TilesetTexture.id,
+//                previewMin,
+//                previewMax,
+//                uv0,
+//                uv1
+//        );
+//        drawList->AddRect(previewMin, previewMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+//
+//        ImGui::Separator();
+//        ImGui::Text("Touch action:");
+//
+//        if (m_EraseMode)
+//        {
+//            if (ImGui::Button("Switch to PAINT", ImVec2(-1.0f, 44.0f)))
+//                m_EraseMode = false;
+//            ImGui::Text("Current mode: ERASE");
+//        }
+//        else
+//        {
+//            if (ImGui::Button("Switch to ERASE", ImVec2(-1.0f, 44.0f)))
+//                m_EraseMode = true;
+//            ImGui::Text("Current mode: PAINT");
+//        }
+//
+//        if (m_EraseMode)
+//            ImGui::TextWrapped("Dragging will erase tiles back to the default index.");
+//        else
+//            ImGui::TextWrapped("Dragging will paint the selected tile index.");
+//
+//
+//
+//        if (ImGui::IsItemHovered())
+//            ImGui::SetTooltip("Tap to choose a tile from the tilesheet");
+//
+//        if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+//            ImGui::OpenPopup("Tile Picker");
+//    }
+//
+//    DrawTilePickerPopup();
+
     ImGui::Separator();
     ImGui::Text("Selected tile: %d", m_SelectedIndex);
 
@@ -380,13 +530,34 @@ void WorkMapEditor::DrawEditorUI()
                 (src.y + src.height) / (float)m_TilesetTexture.height
         );
 
-#if IMGUI_VERSION_NUM >= 19198
-        ImTextureRef texRef = (ImTextureID)(intptr_t)m_TilesetTexture.id;
-        ImGui::Image(texRef, ImVec2(96.0f, 96.0f), uv0, uv1);
-#else
-        ImGui::Image((ImTextureID)(intptr_t)m_TilesetTexture.id, ImVec2(96.0f, 96.0f), uv0, uv1);
-#endif
+        const ImVec2 previewSize(96.0f, 96.0f);
+        const ImVec2 previewMin = ImGui::GetCursorScreenPos();
+        const ImVec2 previewMax(previewMin.x + previewSize.x, previewMin.y + previewSize.y);
+
+        ImGui::InvisibleButton("##selected_tile_preview", previewSize);
+
+        // IMPORTANT: grab these NOW, before any other ImGui widgets
+        const bool previewHovered = ImGui::IsItemHovered();
+        const bool previewClicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        drawList->AddImage(
+                (ImTextureID)(intptr_t)m_TilesetTexture.id,
+                previewMin,
+                previewMax,
+                uv0,
+                uv1
+        );
+        drawList->AddRect(previewMin, previewMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
+
+        if (previewHovered)
+            ImGui::SetTooltip("Tap to choose a tile from the tilesheet");
+
+        if (previewClicked)
+            ImGui::OpenPopup("Tile Picker");
     }
+
+    DrawTilePickerPopup();
 
   //  ImGui::Separator();
  //   ImGui::TextWrapped("Tap a map cell to paint the selected index.");
@@ -423,27 +594,246 @@ void WorkMapEditor::DrawEditorUI()
             m_LastSaveMessage = "Save failed: " + m_SavePath;
     }
 
+
+    ImGui::Separator();
+
+    ImGui::Text("Touch action:");
+
+    if (!m_EraseMode)
+    {
+        if (ImGui::Button("Mode: PAINT", ImVec2(-1.0f, 44.0f)))
+            m_EraseMode = true;
+    }
+    else
+    {
+        if (ImGui::Button("Mode: ERASE", ImVec2(-1.0f, 44.0f)))
+            m_EraseMode = false;
+    }
+
+
+
     if (!m_LastSaveMessage.empty())
         ImGui::TextWrapped("%s", m_LastSaveMessage.c_str());
 
     ImGui::End();
 }
 
+void WorkMapEditor::PaintCell(int x, int y)
+{
+    if (!InBounds(x, y)) return;
+
+    int& cell = m_Tiles[FlatIndex(x, y)];
+    const int newValue = m_EraseMode ? m_DefaultIndex : m_SelectedIndex;
+
+    if (cell != newValue)
+        cell = newValue;
+}
+
+void WorkMapEditor::PaintAtScreen(Vector2 screenPos)
+{
+    int cellX = 0;
+    int cellY = 0;
+
+    if (ScreenToTile(screenPos, cellX, cellY))
+        PaintCell(cellX, cellY);
+}
+
+void WorkMapEditor::PaintStroke(Vector2 fromScreen, Vector2 toScreen)
+{
+    const float dx = toScreen.x - fromScreen.x;
+    const float dy = toScreen.y - fromScreen.y;
+    const float dist = sqrtf(dx * dx + dy * dy);
+
+    // Sample along the drag path so fast swipes do not skip tiles.
+    const float stepSize = std::max(1.0f, (float)m_TileSize * 0.25f);
+    const int steps = std::max(1, (int)ceilf(dist / stepSize));
+
+    for (int i = 0; i <= steps; ++i)
+    {
+        const float t = (float)i / (float)steps;
+
+        Vector2 p{
+                fromScreen.x + dx * t,
+                fromScreen.y + dy * t
+        };
+
+        PaintAtScreen(p);
+    }
+}
+
+
+void WorkMapEditor::HandlePanInput()
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    bool panDown = false;
+    Vector2 panPointer{ 0.0f, 0.0f };
+
+    if (!io.WantCaptureMouse)
+    {
+        const int touchCount = GetTouchPointCount();
+
+        // Android-friendly: 2-finger drag pans the map
+        if (touchCount >= 2)
+        {
+            Vector2 t0 = GetTouchPosition(0);
+            Vector2 t1 = GetTouchPosition(1);
+
+            panPointer.x = (t0.x + t1.x) * 0.5f;
+            panPointer.y = (t0.y + t1.y) * 0.5f;
+            panDown = true;
+        }
+            // Desktop-friendly: middle or right mouse drag pans the map
+        else if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+            panPointer = GetMousePosition();
+            panDown = true;
+        }
+    }
+
+    m_IsPanning = panDown;
+
+    if (panDown)
+    {
+        if (m_PanWasDown)
+        {
+            Vector2 delta{
+                    panPointer.x - m_LastPanPointer.x,
+                    panPointer.y - m_LastPanPointer.y
+            };
+
+            m_MapOffset.x += delta.x;
+            m_MapOffset.y += delta.y;
+
+            ClampMapOffset();
+        }
+
+        m_LastPanPointer = panPointer;
+    }
+
+    m_PanWasDown = panDown;
+
+    // Optional keyboard pan too
+    if (!io.WantCaptureKeyboard)
+    {
+        const float keyPan = (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) ? 16.0f : 8.0f;
+        bool moved = false;
+
+        // Move map opposite of camera intent
+        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+        {
+            m_MapOffset.x += keyPan;
+            moved = true;
+        }
+        if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))
+        {
+            m_MapOffset.x -= keyPan;
+            moved = true;
+        }
+        if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
+        {
+            m_MapOffset.y += keyPan;
+            moved = true;
+        }
+        if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+        {
+            m_MapOffset.y -= keyPan;
+            moved = true;
+        }
+
+        if (moved)
+            ClampMapOffset();
+    }
+}
+
+//
+//void WorkMapEditor::HandlePaintInput()
+//{
+//    ImGuiIO& io = ImGui::GetIO();
+//
+//    if (m_IsPanning)
+//    {
+//        m_PointerWasDown = false;
+//        m_HasLastPaintPointer = false;
+//        return;
+//    }
+//
+//    bool pointerDown = false;
+//    Vector2 pointer{};
+//
+//    const int touchCount = GetTouchPointCount();
+//
+//    if (touchCount == 1)
+//    {
+//        pointer = GetTouchPosition(0);
+//        pointerDown = true;
+//    }
+//    else if (touchCount == 0 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+//    {
+//        pointer = GetMousePosition();
+//        pointerDown = true;
+//    }
+//
+//    if (io.WantCaptureMouse)
+//    {
+//        m_PointerWasDown = pointerDown;
+//        m_HasLastPaintPointer = false;
+//        return;
+//    }
+//
+//    if (pointerDown)
+//    {
+//        if (!m_PointerWasDown)
+//        {
+//            // Initial tap/down: paint immediately
+//            PaintAtScreen(pointer);
+//            m_LastPaintPointer = pointer;
+//            m_HasLastPaintPointer = true;
+//        }
+//        else
+//        {
+//            // Drag: fill in the whole stroke path
+//            if (m_HasLastPaintPointer)
+//                PaintStroke(m_LastPaintPointer, pointer);
+//            else
+//                PaintAtScreen(pointer);
+//
+//            m_LastPaintPointer = pointer;
+//            m_HasLastPaintPointer = true;
+//        }
+//    }
+//    else
+//    {
+//        m_HasLastPaintPointer = false;
+//    }
+//
+//    m_PointerWasDown = pointerDown;
+//}
+
 void WorkMapEditor::HandlePaintInput()
 {
-    // Dear ImGui says this is the right way to know whether input should go
-    // to the UI or to the underlying app/editor.
     ImGuiIO& io = ImGui::GetIO();
+
+    if (m_IsPanning)
+    {
+        m_PointerWasDown = false;
+        m_HasLastPaintPointer = false;
+        return;
+    }
 
     bool pointerDown = false;
     Vector2 pointer{};
 
-    if (GetTouchPointCount() > 0)
+    const int touchCount = GetTouchPointCount();
+
+    // One-finger touch = paint/erase
+    if (touchCount == 1)
     {
         pointer = GetTouchPosition(0);
         pointerDown = true;
     }
-    else if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        // Desktop mouse left = paint/erase
+    else if (touchCount == 0 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
     {
         pointer = GetMousePosition();
         pointerDown = true;
@@ -452,25 +842,318 @@ void WorkMapEditor::HandlePaintInput()
     if (io.WantCaptureMouse)
     {
         m_PointerWasDown = pointerDown;
+        m_HasLastPaintPointer = false;
         return;
     }
 
-    // Tap once = place/overwrite.
-    if (pointerDown && !m_PointerWasDown)
+    if (pointerDown)
     {
-        int cellX = 0;
-        int cellY = 0;
-
-        if (ScreenToTile(pointer, cellX, cellY))
+        if (!m_PointerWasDown)
         {
-            int& cell = m_Tiles[FlatIndex(cellX, cellY)];
-
-            if (cell == m_SelectedIndex)
-                cell = m_DefaultIndex;
-            else
-                cell = m_SelectedIndex;
+            // First touch/down: paint immediately
+            PaintAtScreen(pointer);
+            m_LastPaintPointer = pointer;
+            m_HasLastPaintPointer = true;
         }
+        else
+        {
+            // While dragging: paint the line between last point and current point
+            if (m_HasLastPaintPointer)
+                PaintStroke(m_LastPaintPointer, pointer);
+            else
+                PaintAtScreen(pointer);
+
+            m_LastPaintPointer = pointer;
+            m_HasLastPaintPointer = true;
+        }
+    }
+    else
+    {
+        m_HasLastPaintPointer = false;
     }
 
     m_PointerWasDown = pointerDown;
+}
+
+
+
+//void WorkMapEditor::HandlePaintInput()
+//{
+//    ImGuiIO& io = ImGui::GetIO();
+//
+//    // If we're currently panning, do not also paint.
+//    if (m_IsPanning)
+//    {
+//        m_PointerWasDown = false;
+//        return;
+//    }
+//
+//    bool pointerDown = false;
+//    Vector2 pointer{};
+//
+//    const int touchCount = GetTouchPointCount();
+//
+//    // One-finger touch = paint
+//    if (touchCount == 1)
+//    {
+//        pointer = GetTouchPosition(0);
+//        pointerDown = true;
+//    }
+//        // Mouse left button = paint
+//    else if (touchCount == 0 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+//    {
+//        pointer = GetMousePosition();
+//        pointerDown = true;
+//    }
+//
+//    if (io.WantCaptureMouse)
+//    {
+//        m_PointerWasDown = pointerDown;
+//        return;
+//    }
+//
+//    // Tap once = place/overwrite
+//    if (pointerDown && !m_PointerWasDown)
+//    {
+//        int cellX = 0;
+//        int cellY = 0;
+//
+//        if (ScreenToTile(pointer, cellX, cellY))
+//        {
+//            int& cell = m_Tiles[FlatIndex(cellX, cellY)];
+//
+//            cell = m_EraseMode ? m_DefaultIndex : m_SelectedIndex;
+//
+//
+//        }
+//    }
+//
+//    m_PointerWasDown = pointerDown;
+//}
+
+int WorkMapEditor::FillVisibleDefaultTiles()
+{
+    int changedCount = 0;
+
+    // Fast path for normal grid mode
+    if (!m_DrawIsometric)
+    {
+        const float tileW = (float)m_TileSize;
+        const float tileH = (float)m_TileSize;
+
+        const int startX = std::max(0, (int)floorf((-m_MapOrigin.x) / tileW));
+        const int startY = std::max(0, (int)floorf((-m_MapOrigin.y) / tileH));
+
+        const int endX = std::min(
+                m_MapWidth,
+                (int)ceilf(((float)GetScreenWidth() - m_MapOrigin.x) / tileW) + 1
+        );
+
+        const int endY = std::min(
+                m_MapHeight,
+                (int)ceilf(((float)GetScreenHeight() - m_MapOrigin.y) / tileH) + 1
+        );
+
+        for (int y = startY; y < endY; ++y)
+        {
+            for (int x = startX; x < endX; ++x)
+            {
+                int& cell = m_Tiles[FlatIndex(x, y)];
+                if (cell == m_DefaultIndex)
+                {
+                    cell = m_SelectedIndex;
+                    ++changedCount;
+                }
+            }
+        }
+
+        return changedCount;
+    }
+
+    // Safe fallback for isometric mode
+    for (int y = 0; y < m_MapHeight; ++y)
+    {
+        for (int x = 0; x < m_MapWidth; ++x)
+        {
+            if (!IsTileVisibleOnScreen(x, y))
+                continue;
+
+            int& cell = m_Tiles[FlatIndex(x, y)];
+            if (cell == m_DefaultIndex)
+            {
+                cell = m_SelectedIndex;
+                ++changedCount;
+            }
+        }
+    }
+
+    return changedCount;
+}
+
+bool WorkMapEditor::IsTileVisibleOnScreen(int x, int y) const {
+    Vector2 pos = GetTileDrawPosition(x, y);
+
+    const float tileW = (float) m_TileSize;
+    const float tileH = (float) m_TileSize;
+
+    const float screenW = (float) GetScreenWidth();
+    const float screenH = (float) GetScreenHeight();
+
+    // Simple screen-rect overlap test
+    if (pos.x + tileW <= 0.0f) return false;
+    if (pos.y + tileH <= 0.0f) return false;
+    if (pos.x >= screenW) return false;
+    if (pos.y >= screenH) return false;
+
+    return true;
+
+}
+
+void WorkMapEditor::DrawTilePickerPopup()
+{
+    if (!m_HasTilesetTexture) return;
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    const ImVec2 modalSize(io.DisplaySize.x * 0.88f, io.DisplaySize.y * 0.88f);
+    const ImVec2 modalCenter(io.DisplaySize.x * 0.50f, io.DisplaySize.y * 0.50f);
+
+    ImGui::SetNextWindowPos(modalCenter, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowSize(modalSize, ImGuiCond_Appearing);
+
+    const ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoSavedSettings;
+
+    if (ImGui::BeginPopupModal("Tile Picker", nullptr, flags))
+    {
+        ImGui::Text("Tap a tile to select it.");
+        ImGui::Text("Selected index: %d", m_SelectedIndex);
+        ImGui::Separator();
+
+        const float texW = (float)m_TilesetTexture.width;
+        const float texH = (float)m_TilesetTexture.height;
+
+        // Leave room for footer buttons/text
+        ImVec2 avail = ImGui::GetContentRegionAvail();
+        const float footerReserve = 72.0f;
+        const float fitW = avail.x;
+        const float fitH = std::max(64.0f, avail.y - footerReserve);
+
+        float scaleX = fitW / texW;
+        float scaleY = fitH / texH;
+        float scale = std::min(scaleX, scaleY);
+
+        // Let small tilesheets scale up so they are finger-friendly.
+        scale = std::max(scale, 1.0f);
+
+        const ImVec2 imageSize(texW * scale, texH * scale);
+
+        ImVec2 imageMin = ImGui::GetCursorScreenPos();
+        ImVec2 imageMax(imageMin.x + imageSize.x, imageMin.y + imageSize.y);
+
+        ImGui::InvisibleButton("##tilesheet_picker", imageSize);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        drawList->AddImage(
+                (ImTextureID)(intptr_t)m_TilesetTexture.id,
+                imageMin,
+                imageMax,
+                ImVec2(0.0f, 0.0f),
+                ImVec2(1.0f, 1.0f)
+        );
+
+        // Draw tilesheet grid
+        const float scaledTile = (float)m_TileSize * scale;
+
+        for (int x = 0; x <= m_TilesetColumns; ++x)
+        {
+            const float px = imageMin.x + x * scaledTile;
+            drawList->AddLine(
+                    ImVec2(px, imageMin.y),
+                    ImVec2(px, imageMax.y),
+                    IM_COL32(255, 255, 255, 80)
+            );
+        }
+
+        for (int y = 0; y <= m_TilesetRows; ++y)
+        {
+            const float py = imageMin.y + y * scaledTile;
+            drawList->AddLine(
+                    ImVec2(imageMin.x, py),
+                    ImVec2(imageMax.x, py),
+                    IM_COL32(255, 255, 255, 80)
+            );
+        }
+
+        // Highlight current selection
+        {
+            const int selX = m_SelectedIndex % m_TilesetColumns;
+            const int selY = m_SelectedIndex / m_TilesetColumns;
+
+            ImVec2 selMin(
+                    imageMin.x + selX * scaledTile,
+                    imageMin.y + selY * scaledTile
+            );
+            ImVec2 selMax(
+                    selMin.x + scaledTile,
+                    selMin.y + scaledTile
+            );
+
+            drawList->AddRect(selMin, selMax, IM_COL32(255, 255, 0, 255), 0.0f, 0, 3.0f);
+        }
+
+        int hoveredIndex = -1;
+
+        if (ImGui::IsItemHovered())
+        {
+            ImVec2 mouse = io.MousePos;
+
+            const float localX = mouse.x - imageMin.x;
+            const float localY = mouse.y - imageMin.y;
+
+            const int tx = (int)(localX / scaledTile);
+            const int ty = (int)(localY / scaledTile);
+
+            if (tx >= 0 && tx < m_TilesetColumns &&
+                ty >= 0 && ty < m_TilesetRows)
+            {
+                hoveredIndex = ty * m_TilesetColumns + tx;
+
+                ImVec2 hoverMin(
+                        imageMin.x + tx * scaledTile,
+                        imageMin.y + ty * scaledTile
+                );
+                ImVec2 hoverMax(
+                        hoverMin.x + scaledTile,
+                        hoverMin.y + scaledTile
+                );
+
+                drawList->AddRect(hoverMin, hoverMax, IM_COL32(0, 255, 255, 255), 0.0f, 0, 2.0f);
+
+                if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+                {
+                    m_SelectedIndex = hoveredIndex;
+                    ClampSelectedIndex();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+        }
+
+        ImGui::Spacing();
+
+        if (hoveredIndex >= 0)
+            ImGui::Text("Hover tile: %d", hoveredIndex);
+        else
+            ImGui::Text("Hover tile: none");
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(140.0f, 44.0f)))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::EndPopup();
+    }
 }

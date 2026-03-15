@@ -94,9 +94,11 @@
 #include "raymob.h"
 #include <string>
 #include "rlgl.h"
-#include "imgui.h"
+#include "imgui/imgui.h"
 #include "imgui_raymob.h"
 #include "WorkMapEditor.h"
+#include "Game.h"
+#include "Globs.h"
 
 static std::string GetWritableBasePath()
 {
@@ -205,18 +207,24 @@ static DebugModalResult ShowDebugModal(bool& request_open)
 }
 
 std::string savePath{};
+static Game gGame;
 
 int main(void)
 {
     InitWindow(1280, 800, "Raymob + ImGui");
     SetTargetFPS(60);
 
-    Texture2D tileset = LoadTexture("textures/tilesets/tileset1.png");
+    glb::WW = (unsigned)GetScreenWidth();
+    glb::WH = (unsigned)GetScreenHeight();
 
-    ImGuiRaymob_Init();
+    gGame.Initialize();
 
-    bool showDemo = false;
-    float slider = 0.5f;
+   // Texture2D tileset = LoadTexture("textures/tilesets/spritesheet1.png");
+
+   // ImGuiRaymob_Init();
+
+   // bool showDemo = false;
+  //  float slider = 0.5f;
 
 //    WorkMapEditor mapEditor;
 //    mapEditor.LoadFromFile("maps/work_map.txt");
@@ -224,106 +232,92 @@ int main(void)
 //    savePath = std::string(app->activity->internalDataPath) + "/work_map.txt";
 //    mapEditor.SetSavePath("work_map_saved.txt");
 
-    WorkMapEditor mapEditor;
+  //  WorkMapEditor mapEditor;
 
-    std::string resumeMapPath = GetResumeMapPath();
-    TraceLog(LOG_INFO, "Resume map path: %s", resumeMapPath.c_str());
-    TraceLog(LOG_INFO, "Resume exists: %s", FileExists(resumeMapPath.c_str()) ? "YES" : "NO");
+//std::string resumeMapPath = GetResumeMapPath();
+  //  TraceLog(LOG_INFO, "Resume map path: %s", resumeMapPath.c_str());
+ //   TraceLog(LOG_INFO, "Resume exists: %s", FileExists(resumeMapPath.c_str()) ? "YES" : "NO");
 // save to the same file we want to resume from
-    mapEditor.SetSavePath(resumeMapPath);
+ //   mapEditor.SetSavePath(resumeMapPath);
 
 // load resumed file if it exists, otherwise load default asset
-    if (FileExists(resumeMapPath.c_str()))
-    {
+ ///   if (FileExists(resumeMapPath.c_str()))
+ //   {
         //mapEditor.LoadFromFile("maps/work_map.txt");
-
-        mapEditor.LoadFromFile(resumeMapPath.c_str());
-    }
-    else
-    {
-        mapEditor.LoadFromFile("maps/work_map.txt");
-    }
+  //      mapEditor.LoadFromFile(resumeMapPath.c_str());
+  //  }
+  //  else
+   // {
+ //       mapEditor.LoadFromFile("maps/work_map.txt");
+  //  }
   //  android_app* app = GetAndroidApp();
 //    savePath = std::string(app->activity->internalDataPath) + "/work_map.txt";
 //    mapEditor.SetSavePath("work_map_saved.txt");
-
     while (!WindowShouldClose())
     {
+
+
+        // Simple Android touch control:
+        // touching upper half moves paddle up, lower half moves paddle down
+        float moveY = 0.0f;
+
+        if (GetTouchPointCount() > 0)
+        {
+            Vector2 touch = GetTouchPosition(0);
+            moveY = (touch.y < (float)GetScreenHeight() * 0.5f) ? -1.0f : 1.0f;
+        }
+
+        gGame.SetPlayerMoveIntent(0.0f, moveY);
+
+        const float dt = GetFrameTime();
+        gGame.Update(dt);
+
         BeginDrawing();
-        ClearBackground(BLUE);
-
-       // DrawText("RAYMOB + IMGUI TEST", 40, 180, 40, WHITE);
-       // DrawFPS(40, 240);
-
-        Rectangle src = { 0.0f, 0.0f, 64.0f, 64.0f };
-
-        Rectangle dst = {
-                0.f,
-                0.f,
-                64.0f,
-                64.0f
-        };
-
-        Vector2 origin = { 0.0f, 0.0f };
-
-//        DrawTexturePro(
-//                tileset,
-//                src,
-//                dst,
-//                origin,
-//                0.0f,
-//                WHITE
-//        );
-
-        mapEditor.DrawMap();
-
-        // Flush queued raylib draw calls NOW, before ImGui direct GL rendering
-        rlDrawRenderBatchActive();
-
-
-
-        static bool open_debug_modal = false;
-
-        ImGuiRaymob_NewFrame();
-        mapEditor.DrawEditorUI();
-        mapEditor.HandlePaintInput();
-
-
-        DebugModalResult modal_result = ShowDebugModal(open_debug_modal);
-
-        if (modal_result == DebugModalResult::Back)
-        {
-
-        }
-
-        if (modal_result == DebugModalResult::Continue)
-        {
-
-        }
-
-        ImFont* uiFont = ImGuiRaymob_GetUIFont();
-        if (uiFont) ImGui::PushFont(uiFont);
-
-//        ImGui::Begin("Debug");
-//        ImGui::Text("ImGui overlay is alive.");
-//        ImGui::SliderFloat("slider", &slider, 0.0f, 1.0f);
-//        ImGui::Text("touch the screen and drag");
-//        ImGui::End();
-
-        if (showDemo)
-            ImGui::ShowDemoWindow(&showDemo);
-
-        if (uiFont) ImGui::PopFont();
-
-        ImGuiRaymob_Render();
-
+        gGame.Render();
         EndDrawing();
-
-
+//        BeginDrawing();
+//        ClearBackground(BLUE);
+//
+//        ImGuiRaymob_NewFrame();
+//
+//        mapEditor.HandlePanInput();
+//        mapEditor.HandlePaintInput();
+//
+//        mapEditor.DrawMap();
+//
+//        // Flush queued raylib draw calls before ImGui GL rendering
+//        rlDrawRenderBatchActive();
+//
+//        static bool open_debug_modal = false;
+//
+//        mapEditor.DrawEditorUI();
+//
+//        DebugModalResult modal_result = ShowDebugModal(open_debug_modal);
+//
+//        if (modal_result == DebugModalResult::Back)
+//        {
+//        }
+//
+//        if (modal_result == DebugModalResult::Continue)
+//        {
+//        }
+//
+//        ImFont* uiFont = ImGuiRaymob_GetUIFont();
+//        if (uiFont) ImGui::PushFont(uiFont);
+//
+//        if (showDemo)
+//            ImGui::ShowDemoWindow(&showDemo);
+//
+//        if (uiFont) ImGui::PopFont();
+//
+//        ImGuiRaymob_Render();
+//
+//        EndDrawing();
     }
 
-    UnloadTexture(tileset);
-    ImGuiRaymob_Shutdown();
+   // UnloadTexture(tileset);
+    gGame.Shutdown();
+  //  ImGuiRaymob_Shutdown();
     CloseWindow();
     return 0;
 }
