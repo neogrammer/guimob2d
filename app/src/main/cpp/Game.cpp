@@ -5,8 +5,9 @@
 #include "Components.h"
 #include "Utils.h"
 
+
 Game::Game()
-    : mInitialized(false)
+    : mInitialized(false), soundManager(), gStateMgr{}
 {
 }
 
@@ -25,6 +26,25 @@ bool Game::Initialize()
     std::srand(0xC0FFEE);
     loadTextures();
     createEntities();
+
+    soundManager = std::make_unique<sfx::SoundManager>();
+    soundManager->init();
+    RegisterGameAudio(*soundManager);
+
+    sfx::AudioAssetDef tap{};
+    tap.Id = "menu_tap";
+    tap.Path = "audio/ui/menu_tap.wav";
+    tap.Type = sfx::AudioAssetType::Sfx;
+    tap.Bus = sfx::AudioBus::Ui;
+    tap.DefaultVolume = 0.8f;
+    tap.Looping = false;
+    tap.Tags = { "title", "ui" };
+
+    soundManager->repository().add(tap);
+
+
+    gStateMgr = std::make_unique<GameStateMgr>(*this);
+
     mInitialized = true;
     return true;
 }
@@ -48,6 +68,8 @@ void Game::Shutdown()
     ball.reset();
     opponentPaddle.reset();
 
+    soundManager->shutdown();
+
     mInitialized = false;
 }
 
@@ -58,9 +80,13 @@ void Game::Update(float deltaTime)
         return;
     }
 
+    gStateMgr->Update(deltaTime);
+    soundManager->update();
+
     inputSystem.update(deltaTime);
     aiSystem.update(deltaTime, ball);
     collisionSystem.update(deltaTime);
+
 }
 
 void Game::Render()
@@ -71,6 +97,8 @@ void Game::Render()
     }
 
     ClearBackground(BLACK);
+
+    gStateMgr->Render();
 
     const auto bgIt = textures.find("background");
     if (bgIt != textures.end() && bgIt->second.id != 0)
@@ -88,6 +116,7 @@ void Game::Render()
 
     DrawLine(static_cast<int>(glb::WW / 2), 0, static_cast<int>(glb::WW / 2), static_cast<int>(glb::WH), Color{ 255, 255, 255, 40 });
     DrawFPS(20, 20);
+
 
     renderSystem.render(textures);
 }
@@ -175,13 +204,6 @@ void Game::loadTextures()
     TraceLog(LOG_INFO, "ball id=%u w=%d h=%d", textures["ball"].id, textures["ball"].width, textures["ball"].height);
     TraceLog(LOG_INFO, "background id=%u w=%d h=%d", textures["background"].id, textures["background"].width, textures["background"].height);
 }
-
-//void Game::loadTextures()
-//{
-//    textures.emplace("paddle", TryLoadTexture("textures/paddle.png", "assets/textures/paddle.png"));
-//    textures.emplace("ball", TryLoadTexture("textures/ball.png", "assets/textures/ball.png"));
-//    textures.emplace("background", TryLoadTexture("textures/background.png", "assets/textures/background.png"));
-//}
 
 void Game::unloadTextures()
 {
@@ -276,4 +298,12 @@ void Game::createEntities()
     collisionSystem.addEntity(ball);
     collisionSystem.addEntity(player);
     collisionSystem.addEntity(opponentPaddle);
+}
+
+sfx::SoundManager &Game::getSoundMgr() {
+    return *soundManager;
+}
+
+void Game::Input() {
+    gStateMgr->Input();
 }

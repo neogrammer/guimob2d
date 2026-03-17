@@ -270,6 +270,7 @@ int main(void)
         gGame.SetPlayerMoveIntent(0.0f, moveY);
 
         const float dt = GetFrameTime();
+        gGame.Input();
         gGame.Update(dt);
 
         BeginDrawing();

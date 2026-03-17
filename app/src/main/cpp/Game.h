@@ -10,6 +10,9 @@
 #include "Globs.h"
 #include "Entity.h"
 #include "Systems.h"
+#include "audio/SoundManager.h"
+#include "audio/GameAudio.h"
+#include "GameStateMgr.h"
 
 class Game
 {
@@ -20,11 +23,14 @@ public:
     bool Initialize();
     void Shutdown();
 
+    void Input();
     void Update(float deltaTime);
     void Render();
 
     void SetPlayerMoveIntent(float x, float y);
     void SetPlayerTouchY(float touchY);
+
+    sfx::SoundManager& getSoundMgr();
 
 private:
     Texture2D TryLoadTexture(const char* primaryPath, const char* fallbackPath);
@@ -44,6 +50,9 @@ private:
     CollisionSystem collisionSystem;
 
     std::unordered_map<std::string, Texture2D> textures;
+
+    std::unique_ptr<sfx::SoundManager> soundManager;
+    std::unique_ptr<GameStateMgr> gStateMgr;
 };
 
 #endif

@@ -76,16 +76,17 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++20"
-                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+
                 def nativeLibName = project.findProperty('app.native_library_name') ?: 'raymob1'
                 def glVersion = project.findProperty('gl.version') ?: 'ES32'
 
-                arguments "-DPLATFORM=Android",
-                          "-DBUILD_EXAMPLES=OFF",
-                          "-DAPP_LIB_NAME=$nativeLibName",
-                          "-DGL_VERSION=$glVersion"
+                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+                        "-DANDROID_STL=c++_shared",
+                        "-DPLATFORM=Android",
+                        "-DBUILD_EXAMPLES=OFF",
+                        "-DAPP_LIB_NAME=$nativeLibName",
+                        "-DGL_VERSION=$glVersion"
             }
-
         }
 
         applicationVariants.all { variant ->
@@ -167,7 +168,9 @@ android {
     buildFeatures {
         buildConfig true
         viewBinding true
+        prefab true
     }
+    ndkVersion '28.2.13676358'
 }
 
 /*
@@ -176,9 +179,9 @@ android {
 // This section is used to include external libraries or modules that your project relies on.
 // These dependencies will be automatically downloaded and integrated into the build process.
 // To add a new dependency, use the 'implementation' or 'api' keyword followed by the library's coordinate or name.
-
+*/
 dependencies {
-
+    implementation 'com.google.oboe:oboe:1.10.0'
 }
-
+/*
 */

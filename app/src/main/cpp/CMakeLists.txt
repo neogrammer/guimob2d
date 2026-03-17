@@ -50,10 +50,27 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/imgui/imgui_widgets.cpp
     ${CMAKE_SOURCE_DIR}/imgui/imgui_demo.cpp
     ${CMAKE_SOURCE_DIR}/imgui/backends/imgui_impl_opengl3.cpp
+
+    ${CMAKE_SOURCE_DIR}/GameState.cpp
+    ${CMAKE_SOURCE_DIR}/GameStateMgr.cpp
+
+    ${CMAKE_SOURCE_DIR}/game_states/SplashState.cpp
+    ${CMAKE_SOURCE_DIR}/game_states/TitleState.cpp
+    ${CMAKE_SOURCE_DIR}/game_states/PlayState.cpp
+
+    ${CMAKE_SOURCE_DIR}/audio/SoundRepository.cpp
+    ${CMAKE_SOURCE_DIR}/audio/SoundManager.cpp
+    ${CMAKE_SOURCE_DIR}/audio/SoundCache.cpp
+
+    ${CMAKE_SOURCE_DIR}/audio/GameAudio.cpp
 )
+
+
 
 add_library(${APP_LIB_NAME} SHARED ${SOURCES})
 target_link_options(${APP_LIB_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
+
+
 
 target_compile_definitions(${APP_LIB_NAME} PRIVATE PLATFORM_ANDROID IMGUI_IMPL_OPENGL_ES3)
 
@@ -65,4 +82,6 @@ target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raylib")
 target_include_directories(${APP_LIB_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/deps/raymob")
 
-target_link_libraries(${APP_LIB_NAME} raylib raymoblib)
+find_package (oboe REQUIRED CONFIG)
+
+target_link_libraries(${APP_LIB_NAME} raylib raymoblib oboe::oboe)

@@ -16,6 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ClangdSettings">
+    <option name="clangTidyViaClangd" value="false" />
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[LocalEmulator::path=C:\Users\jlhar\.android\avd\Pixel_8.avd]" />
@@ -58,6 +59,7 @@
     "GradleDaemonJvmCriteriaMigrationNotification.isNotificationDisabled": "true",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
@@ -66,9 +68,12 @@
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp",
+    "last_opened_file_path": "C:/dev/RaymobGames/Raymob1/raymob/app/src/main/assets/audio/music",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
     "recommended.upgrade.do.not.ask.for.project": "true",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+    "settings.editor.selected.configurable": "configurable.group.editor"
   },
   "keyToStringList": {
     "GitStage.ChangesTree.GroupingKeys": [
@@ -80,13 +85,14 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\music" />
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\sfx" />
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\music" />
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\ui" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures\tilesets" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\maps" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\fonts" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\audio" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\maps" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures\tilesets" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp" />
@@ -182,6 +188,44 @@
       <path value="$PROJECT_DIR$/app/src/main/cpp/deps/raylib" />
       <path value="$PROJECT_DIR$/.." />
     </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="OCSymbolicBreakpointType">
+          <properties>
+            <option name="moduleName" value="libart.so" />
+            <option name="symbolPattern" value="art_sigbus_fault" />
+          </properties>
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/app/src/main/cpp/Game.cpp</url>
+          <line>31</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/app/src/main/cpp/main.cpp</url>
+          <line>219</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/app/src/main/cpp/main.cpp</url>
+          <line>272</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/app/src/main/cpp/Game.cpp</url>
+          <line>87</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/app/src/main/cpp/GameStateMgr.cpp</url>
+          <line>27</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

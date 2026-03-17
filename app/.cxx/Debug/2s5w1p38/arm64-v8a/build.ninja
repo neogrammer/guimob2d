@@ -249,6 +249,46 @@ build CMakeFiles/raymob1.dir/imgui/backends/imgui_impl_opengl3.cpp.o: CXX_COMPIL
   OBJECT_DIR = CMakeFiles\raymob1.dir
   OBJECT_FILE_DIR = CMakeFiles\raymob1.dir\imgui\backends
 
+build CMakeFiles/raymob1.dir/GameState.cpp.o: CXX_COMPILER__raymob1_unscanned_Debug C$:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/GameState.cpp || cmake_object_order_depends_target_raymob1
+  DEFINES = -DDEBUG -DGRAPHICS_API_OPENGL_ES3 -DIMGUI_IMPL_OPENGL_ES3 -DPLATFORM_ANDROID -D_DEBUG -Draymob1_EXPORTS
+  DEP_FILE = CMakeFiles\raymob1.dir\GameState.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info  -std=c++20 -fPIC
+  INCLUDES = -IC:/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raymob -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib/src
+  OBJECT_DIR = CMakeFiles\raymob1.dir
+  OBJECT_FILE_DIR = CMakeFiles\raymob1.dir
+
+build CMakeFiles/raymob1.dir/GameStateMgr.cpp.o: CXX_COMPILER__raymob1_unscanned_Debug C$:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/GameStateMgr.cpp || cmake_object_order_depends_target_raymob1
+  DEFINES = -DDEBUG -DGRAPHICS_API_OPENGL_ES3 -DIMGUI_IMPL_OPENGL_ES3 -DPLATFORM_ANDROID -D_DEBUG -Draymob1_EXPORTS
+  DEP_FILE = CMakeFiles\raymob1.dir\GameStateMgr.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info  -std=c++20 -fPIC
+  INCLUDES = -IC:/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raymob -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib/src
+  OBJECT_DIR = CMakeFiles\raymob1.dir
+  OBJECT_FILE_DIR = CMakeFiles\raymob1.dir
+
+build CMakeFiles/raymob1.dir/game_states/SplashState.cpp.o: CXX_COMPILER__raymob1_unscanned_Debug C$:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/game_states/SplashState.cpp || cmake_object_order_depends_target_raymob1
+  DEFINES = -DDEBUG -DGRAPHICS_API_OPENGL_ES3 -DIMGUI_IMPL_OPENGL_ES3 -DPLATFORM_ANDROID -D_DEBUG -Draymob1_EXPORTS
+  DEP_FILE = CMakeFiles\raymob1.dir\game_states\SplashState.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info  -std=c++20 -fPIC
+  INCLUDES = -IC:/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raymob -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib/src
+  OBJECT_DIR = CMakeFiles\raymob1.dir
+  OBJECT_FILE_DIR = CMakeFiles\raymob1.dir\game_states
+
+build CMakeFiles/raymob1.dir/game_states/TitleState.cpp.o: CXX_COMPILER__raymob1_unscanned_Debug C$:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/game_states/TitleState.cpp || cmake_object_order_depends_target_raymob1
+  DEFINES = -DDEBUG -DGRAPHICS_API_OPENGL_ES3 -DIMGUI_IMPL_OPENGL_ES3 -DPLATFORM_ANDROID -D_DEBUG -Draymob1_EXPORTS
+  DEP_FILE = CMakeFiles\raymob1.dir\game_states\TitleState.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info  -std=c++20 -fPIC
+  INCLUDES = -IC:/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raymob -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib/src
+  OBJECT_DIR = CMakeFiles\raymob1.dir
+  OBJECT_FILE_DIR = CMakeFiles\raymob1.dir\game_states
+
+build CMakeFiles/raymob1.dir/game_states/PlayState.cpp.o: CXX_COMPILER__raymob1_unscanned_Debug C$:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/game_states/PlayState.cpp || cmake_object_order_depends_target_raymob1
+  DEFINES = -DDEBUG -DGRAPHICS_API_OPENGL_ES3 -DIMGUI_IMPL_OPENGL_ES3 -DPLATFORM_ANDROID -D_DEBUG -Draymob1_EXPORTS
+  DEP_FILE = CMakeFiles\raymob1.dir\game_states\PlayState.cpp.o.d
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info  -std=c++20 -fPIC
+  INCLUDES = -IC:/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raymob -IC:/dev/RaymobGames/Raymob1/raymob/app/src/main/cpp/deps/raylib/src
+  OBJECT_DIR = CMakeFiles\raymob1.dir
+  OBJECT_FILE_DIR = CMakeFiles\raymob1.dir\game_states
+
 
 # =============================================================================
 # Link build statements for SHARED_LIBRARY target raymob1
@@ -257,7 +297,7 @@ build CMakeFiles/raymob1.dir/imgui/backends/imgui_impl_opengl3.cpp.o: CXX_COMPIL
 #############################################
 # Link the shared library C:\dev\RaymobGames\Raymob1\raymob\app\build\intermediates\cxx\Debug\2s5w1p38\obj\arm64-v8a\libraymob1.so
 
-build C$:/dev/RaymobGames/Raymob1/raymob/app/build/intermediates/cxx/Debug/2s5w1p38/obj/arm64-v8a/libraymob1.so: CXX_SHARED_LIBRARY_LINKER__raymob1_Debug CMakeFiles/raymob1.dir/C_/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue/android_native_app_glue.c.o CMakeFiles/raymob1.dir/main.cpp.o CMakeFiles/raymob1.dir/Globs.cpp.o CMakeFiles/raymob1.dir/Component.cpp.o CMakeFiles/raymob1.dir/AIComponent.cpp.o CMakeFiles/raymob1.dir/BoundingBoxComponent.cpp.o CMakeFiles/raymob1.dir/CollisionComponent.cpp.o CMakeFiles/raymob1.dir/InputComponent.cpp.o CMakeFiles/raymob1.dir/SpriteComponent.cpp.o CMakeFiles/raymob1.dir/TransformComponent.cpp.o CMakeFiles/raymob1.dir/AISystem.cpp.o CMakeFiles/raymob1.dir/CollisionSystem.cpp.o CMakeFiles/raymob1.dir/InputSystem.cpp.o CMakeFiles/raymob1.dir/RenderSystem.cpp.o CMakeFiles/raymob1.dir/System.cpp.o CMakeFiles/raymob1.dir/Game.cpp.o CMakeFiles/raymob1.dir/Utils.cpp.o CMakeFiles/raymob1.dir/imgui_raymob.cpp.o CMakeFiles/raymob1.dir/WorkMapEditor.cpp.o CMakeFiles/raymob1.dir/imgui/imgui.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_draw.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_tables.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_widgets.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_demo.cpp.o CMakeFiles/raymob1.dir/imgui/backends/imgui_impl_opengl3.cpp.o | deps/raylib/raylib/libraylib.a deps/raymob/libraymoblib.a deps/raylib/raylib/libraylib.a || deps/raylib/raylib/libraylib.a deps/raymob/libraymoblib.a
+build C$:/dev/RaymobGames/Raymob1/raymob/app/build/intermediates/cxx/Debug/2s5w1p38/obj/arm64-v8a/libraymob1.so: CXX_SHARED_LIBRARY_LINKER__raymob1_Debug CMakeFiles/raymob1.dir/C_/Users/jlhar/AppData/Local/Android/Sdk/ndk/26.1.10909125/sources/android/native_app_glue/android_native_app_glue.c.o CMakeFiles/raymob1.dir/main.cpp.o CMakeFiles/raymob1.dir/Globs.cpp.o CMakeFiles/raymob1.dir/Component.cpp.o CMakeFiles/raymob1.dir/AIComponent.cpp.o CMakeFiles/raymob1.dir/BoundingBoxComponent.cpp.o CMakeFiles/raymob1.dir/CollisionComponent.cpp.o CMakeFiles/raymob1.dir/InputComponent.cpp.o CMakeFiles/raymob1.dir/SpriteComponent.cpp.o CMakeFiles/raymob1.dir/TransformComponent.cpp.o CMakeFiles/raymob1.dir/AISystem.cpp.o CMakeFiles/raymob1.dir/CollisionSystem.cpp.o CMakeFiles/raymob1.dir/InputSystem.cpp.o CMakeFiles/raymob1.dir/RenderSystem.cpp.o CMakeFiles/raymob1.dir/System.cpp.o CMakeFiles/raymob1.dir/Game.cpp.o CMakeFiles/raymob1.dir/Utils.cpp.o CMakeFiles/raymob1.dir/imgui_raymob.cpp.o CMakeFiles/raymob1.dir/WorkMapEditor.cpp.o CMakeFiles/raymob1.dir/imgui/imgui.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_draw.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_tables.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_widgets.cpp.o CMakeFiles/raymob1.dir/imgui/imgui_demo.cpp.o CMakeFiles/raymob1.dir/imgui/backends/imgui_impl_opengl3.cpp.o CMakeFiles/raymob1.dir/GameState.cpp.o CMakeFiles/raymob1.dir/GameStateMgr.cpp.o CMakeFiles/raymob1.dir/game_states/SplashState.cpp.o CMakeFiles/raymob1.dir/game_states/TitleState.cpp.o CMakeFiles/raymob1.dir/game_states/PlayState.cpp.o | deps/raylib/raylib/libraylib.a deps/raymob/libraymoblib.a deps/raylib/raylib/libraylib.a || deps/raylib/raylib/libraylib.a deps/raymob/libraymoblib.a
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++20 -fno-limit-debug-info
   LINK_FLAGS = -static-libstdc++ -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments    -Wl,-z,max-page-size=16384
   LINK_LIBRARIES = deps/raylib/raylib/libraylib.a  deps/raymob/libraymoblib.a  deps/raylib/raylib/libraylib.a  -llog  -landroid  -lEGL  -lGLESv3  -lOpenSLES  -latomic  -lc  -lm  -latomic -lm
