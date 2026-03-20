@@ -221,7 +221,7 @@ int main(void)
 
    // Texture2D tileset = LoadTexture("textures/tilesets/spritesheet1.png");
 
-   // ImGuiRaymob_Init();
+    ImGuiRaymob_Init();
 
    // bool showDemo = false;
   //  float slider = 0.5f;
@@ -259,23 +259,34 @@ int main(void)
 
         // Simple Android touch control:
         // touching upper half moves paddle up, lower half moves paddle down
-        float moveY = 0.0f;
-
-        if (GetTouchPointCount() > 0)
-        {
-            Vector2 touch = GetTouchPosition(0);
-            moveY = (touch.y < (float)GetScreenHeight() * 0.5f) ? -1.0f : 1.0f;
-        }
-
-        gGame.SetPlayerMoveIntent(0.0f, moveY);
+//        float moveY = 0.0f;
+//
+//        if (GetTouchPointCount() > 0)
+//        {
+//            Vector2 touch = GetTouchPosition(0);
+//            moveY = (touch.y < (float)GetScreenHeight() * 0.5f) ? -1.0f : 1.0f;
+//        }
+//
+//        gGame.SetPlayerMoveIntent(0.0f, moveY);
 
         const float dt = GetFrameTime();
         gGame.Input();
         gGame.Update(dt);
 
         BeginDrawing();
+        ClearBackground(BLUE);
         gGame.Render();
+        // Flush queued raylib draw calls before ImGui GL rendering
+        rlDrawRenderBatchActive();
+        ImGuiRaymob_NewFrame();
+
+        ImFont* uiFont = ImGuiRaymob_GetUIFont();
+        if (uiFont) ImGui::PushFont(uiFont);
+        gGame.RenderUI();
+        if (uiFont) ImGui::PopFont();
+        ImGuiRaymob_Render();
         EndDrawing();
+
 //        BeginDrawing();
 //        ClearBackground(BLUE);
 //
@@ -318,7 +329,7 @@ int main(void)
 
    // UnloadTexture(tileset);
     gGame.Shutdown();
-  //  ImGuiRaymob_Shutdown();
+    ImGuiRaymob_Shutdown();
     CloseWindow();
     return 0;
 }

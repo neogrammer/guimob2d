@@ -25,6 +25,7 @@ public:
     virtual void Input() = 0;
     virtual void Update(float deltaTime) = 0;
     virtual void Render() = 0;
+    virtual void RenderUI() = 0;
 
 
     void readyUpState(gstate state, bool stackIt = false, bool updateClearStop = true, gstate nextClearState = gstate::None);

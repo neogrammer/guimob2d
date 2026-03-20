@@ -13,6 +13,7 @@
 #include "audio/SoundManager.h"
 #include "audio/GameAudio.h"
 #include "GameStateMgr.h"
+#include "input/TouchInput.h"
 
 class Game
 {
@@ -27,22 +28,25 @@ public:
     void Update(float deltaTime);
     void Render();
 
+    void RenderUI();
     void SetPlayerMoveIntent(float x, float y);
     void SetPlayerTouchY(float touchY);
 
     sfx::SoundManager& getSoundMgr();
 
+    input::TouchInput& getTouch();
+    const input::TouchInput& getTouch() const;
+
+    std::unordered_map<std::string, Texture2D>& getTextures();
+
 private:
     Texture2D TryLoadTexture(const char* primaryPath, const char* fallbackPath);
     void loadTextures();
+    friend class GameState;
     void unloadTextures();
     void createEntities();
 
     bool mInitialized;
-
-    sptent player;
-    sptent ball;
-    sptent opponentPaddle;
 
     RenderSystem renderSystem;
     InputSystem inputSystem;
@@ -52,6 +56,7 @@ private:
     std::unordered_map<std::string, Texture2D> textures;
 
     std::unique_ptr<sfx::SoundManager> soundManager;
+    std::unique_ptr<input::TouchInput> touchInput;
     std::unique_ptr<GameStateMgr> gStateMgr;
 };
 

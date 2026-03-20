@@ -4,7 +4,7 @@
 
 #include "GameState.h"
 #include "GameStateMgr.h"
-
+#include "Game.h"
 GameState::GameState(GameStateMgr& gStateMgr)
   : mGStateMgr{&gStateMgr}
 {
@@ -27,7 +27,8 @@ void GameState::Enter()
 
 void GameState::Leave()
 {
-
+  mGStateMgr->getGame().unloadTextures();
+  mGStateMgr->getGame().textures.clear();
 }
 
 void GameState::readyUpState(gstate state, bool stackIt, bool updateClearStop, gstate nextClearState)

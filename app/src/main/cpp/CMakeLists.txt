@@ -4,7 +4,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+message(WARNING "APP_LIB_NAME='${APP_LIB_NAME}'")
 project("${APP_LIB_NAME}")
 
 set(PLATFORM Android CACHE STRING "" FORCE)
@@ -63,11 +63,14 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/audio/SoundCache.cpp
 
     ${CMAKE_SOURCE_DIR}/audio/GameAudio.cpp
+
+    ${CMAKE_SOURCE_DIR}/input/TouchInput.cpp
 )
 
 
 
 add_library(${APP_LIB_NAME} SHARED ${SOURCES})
+
 target_link_options(${APP_LIB_NAME} PRIVATE "-Wl,-z,max-page-size=16384")
 
 

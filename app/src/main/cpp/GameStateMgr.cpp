@@ -209,12 +209,12 @@ void GameStateMgr::Update(float deltaTime)
 
     while (!mStateStack.empty())
     {
-        mHelperStack.push(mStateStack.top());
+        mHelperStack.push(mStateStack.top().lock());
         mStateStack.pop();
     }
     while (!mHelperStack.empty())
     {
-        mStateStack.push(mHelperStack.top());
+        mStateStack.push(mHelperStack.top().lock());
         mHelperStack.pop();
         topstate->Update(deltaTime);
     }
@@ -269,4 +269,13 @@ void GameStateMgr::Input()
 
 Game& GameStateMgr::getGame() {
     return *mGame;
+}
+
+void GameStateMgr::RenderUI() {
+    if (topstate == nullptr)
+    {
+        log("No topstate!");
+        return;
+    }
+    topstate->RenderUI();
 }

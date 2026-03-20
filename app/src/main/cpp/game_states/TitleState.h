@@ -9,6 +9,7 @@
 class Game;
 
 class TitleState : public GameState {
+    void drawMenuPanel();
 public:
     void Enter() override final;
     void Leave() override final;
@@ -20,6 +21,9 @@ public:
     void Input() override final;
     void Update(float deltaTime) override final;
     void Render() override final;
+    void RenderUI() override final;
+
+
 };
 
 

@@ -37,3 +37,10 @@ void PlayState::Enter() {
 void PlayState::Leave() {
     GameState::Leave();
 }
+
+void PlayState::RenderUI()
+{
+
+}
+
+

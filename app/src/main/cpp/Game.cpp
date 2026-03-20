@@ -7,7 +7,7 @@
 
 
 Game::Game()
-    : mInitialized(false), soundManager(), gStateMgr{}
+    : mInitialized(false), soundManager(), gStateMgr{}, touchInput{}
 {
 }
 
@@ -15,6 +15,17 @@ Game::~Game()
 {
     Shutdown();
 }
+
+input::TouchInput& Game::getTouch()
+{
+    return *touchInput;
+}
+
+const input::TouchInput& Game::getTouch() const
+{
+    return *touchInput;
+}
+
 
 bool Game::Initialize()
 {
@@ -31,19 +42,9 @@ bool Game::Initialize()
     soundManager->init();
     RegisterGameAudio(*soundManager);
 
-    sfx::AudioAssetDef tap{};
-    tap.Id = "menu_tap";
-    tap.Path = "audio/ui/menu_tap.wav";
-    tap.Type = sfx::AudioAssetType::Sfx;
-    tap.Bus = sfx::AudioBus::Ui;
-    tap.DefaultVolume = 0.8f;
-    tap.Looping = false;
-    tap.Tags = { "title", "ui" };
-
-    soundManager->repository().add(tap);
-
-
     gStateMgr = std::make_unique<GameStateMgr>(*this);
+
+    touchInput = std::make_unique<input::TouchInput>();
 
     mInitialized = true;
     return true;
@@ -56,17 +57,14 @@ void Game::Shutdown()
         return;
     }
 
-    unloadTextures();
-    textures.clear();
+
+
 
     renderSystem.clearEntities();
     inputSystem.clearEntities();
     aiSystem.clearEntities();
     collisionSystem.clearEntities();
 
-    player.reset();
-    ball.reset();
-    opponentPaddle.reset();
 
     soundManager->shutdown();
 
@@ -80,11 +78,13 @@ void Game::Update(float deltaTime)
         return;
     }
 
+    touchInput->update(deltaTime);
+
     gStateMgr->Update(deltaTime);
     soundManager->update();
 
     inputSystem.update(deltaTime);
-    aiSystem.update(deltaTime, ball);
+    //aiSystem.update(deltaTime, ball);
     collisionSystem.update(deltaTime);
 
 }
@@ -100,7 +100,7 @@ void Game::Render()
 
     gStateMgr->Render();
 
-    const auto bgIt = textures.find("background");
+   /* const auto bgIt = textures.find("background");
     if (bgIt != textures.end() && bgIt->second.id != 0)
     {
         const Texture2D& bg = bgIt->second;
@@ -112,10 +112,10 @@ void Game::Render()
     {
         DrawRectangleGradientV(0, 0, static_cast<int>(glb::WW), static_cast<int>(glb::WH),
                                Color{ 10, 18, 36, 255 }, Color{ 0, 0, 0, 255 });
-    }
+    }*/
 
-    DrawLine(static_cast<int>(glb::WW / 2), 0, static_cast<int>(glb::WW / 2), static_cast<int>(glb::WH), Color{ 255, 255, 255, 40 });
-    DrawFPS(20, 20);
+    //DrawLine(static_cast<int>(glb::WW / 2), 0, static_cast<int>(glb::WW / 2), static_cast<int>(glb::WH), Color{ 255, 255, 255, 40 });
+    //DrawFPS(20, 20);
 
 
     renderSystem.render(textures);
@@ -123,41 +123,41 @@ void Game::Render()
 
 void Game::SetPlayerMoveIntent(float x, float y)
 {
-    if (!player)
-    {
-        return;
-    }
-
-    auto input = player->getComponent<InputComponent>();
-    if (input)
-    {
-        input->setMoveIntent(x, y);
-    }
+//    if (!player)
+//    {
+//        return;
+//    }
+//
+//    auto input = player->getComponent<InputComponent>();
+//    if (input)
+//    {
+//        input->setMoveIntent(x, y);
+//    }
 }
 
 void Game::SetPlayerTouchY(float touchY)
 {
-    if (!player)
-    {
-        return;
-    }
-
-    auto transform = player->getComponent<TransformComponent>();
-    auto sprite = player->getComponent<SpriteComponent>();
-    auto bounds = player->getComponent<BoundingBoxComponent>();
-    auto input = player->getComponent<InputComponent>();
-    if (!transform || !sprite || !bounds)
-    {
-        return;
-    }
-
-    if (input)
-    {
-        input->setMoveIntent(0.0f, 0.0f);
-    }
-
-    transform->position.y = touchY - (sprite->size.y * 0.5f);
-    ClampToBounds(transform, sprite, bounds);
+//    if (!player)
+//    {
+//        return;
+//    }
+//
+//    auto transform = player->getComponent<TransformComponent>();
+//    auto sprite = player->getComponent<SpriteComponent>();
+//    auto bounds = player->getComponent<BoundingBoxComponent>();
+//    auto input = player->getComponent<InputComponent>();
+//    if (!transform || !sprite || !bounds)
+//    {
+//        return;
+//    }
+//
+//    if (input)
+//    {
+//        input->setMoveIntent(0.0f, 0.0f);
+//    }
+//
+//    transform->position.y = touchY - (sprite->size.y * 0.5f);
+//    ClampToBounds(transform, sprite, bounds);
 }
 
 Texture2D Game::TryLoadTexture(const char* primaryPath, const char* fallbackPath)
@@ -194,15 +194,21 @@ Texture2D Game::TryLoadTexture(const char* primaryPath, const char* fallbackPath
     return Texture2D{};
 }
 
+std::unordered_map<std::string, Texture2D>& Game::getTextures()
+{
+    return textures;
+
+}
+
 void Game::loadTextures()
 {
-    textures.emplace("paddle", LoadTexture("textures/paddle.png"));
-    textures.emplace("ball", LoadTexture("textures/ball.png"));
-    textures.emplace("background", LoadTexture("textures/background.png"));
-
-    TraceLog(LOG_INFO, "paddle id=%u w=%d h=%d", textures["paddle"].id, textures["paddle"].width, textures["paddle"].height);
-    TraceLog(LOG_INFO, "ball id=%u w=%d h=%d", textures["ball"].id, textures["ball"].width, textures["ball"].height);
-    TraceLog(LOG_INFO, "background id=%u w=%d h=%d", textures["background"].id, textures["background"].width, textures["background"].height);
+//    textures.emplace("paddle", LoadTexture("textures/paddle.png"));
+//    textures.emplace("ball", LoadTexture("textures/ball.png"));
+//    textures.emplace("background", LoadTexture("textures/background.png"));
+//
+//    TraceLog(LOG_INFO, "paddle id=%u w=%d h=%d", textures["paddle"].id, textures["paddle"].width, textures["paddle"].height);
+//    TraceLog(LOG_INFO, "ball id=%u w=%d h=%d", textures["ball"].id, textures["ball"].width, textures["ball"].height);
+//    TraceLog(LOG_INFO, "background id=%u w=%d h=%d", textures["background"].id, textures["background"].width, textures["background"].height);
 }
 
 void Game::unloadTextures()
@@ -220,84 +226,84 @@ void Game::unloadTextures()
 
 void Game::createEntities()
 {
-    const Texture2D& paddleTex = textures.at("paddle");
-    const Texture2D& ballTex = textures.at("ball");
+//    const Texture2D& paddleTex = textures.at("paddle");
+//    const Texture2D& ballTex = textures.at("ball");
+//
+//    const float paddleW = (paddleTex.id != 0) ? static_cast<float>(paddleTex.width) : 44.0f;
+//    const float paddleH = (paddleTex.id != 0) ? static_cast<float>(paddleTex.height) : 180.0f;
+//    const float ballW = (ballTex.id != 0) ? static_cast<float>(ballTex.width) : 28.0f;
+//    const float ballH = (ballTex.id != 0) ? static_cast<float>(ballTex.height) : 28.0f;
 
-    const float paddleW = (paddleTex.id != 0) ? static_cast<float>(paddleTex.width) : 44.0f;
-    const float paddleH = (paddleTex.id != 0) ? static_cast<float>(paddleTex.height) : 180.0f;
-    const float ballW = (ballTex.id != 0) ? static_cast<float>(ballTex.width) : 28.0f;
-    const float ballH = (ballTex.id != 0) ? static_cast<float>(ballTex.height) : 28.0f;
-
-    player = std::make_shared<Entity>();
-    {
-        const float x = glb::WW / 7.0f - paddleW;
-        auto transform = std::make_shared<TransformComponent>(x, (glb::WH - paddleH) * 0.5f);
-        auto sprite = std::make_shared<SpriteComponent>("paddle", paddleW, paddleH);
-        sprite->tint = Color{ 235, 235, 255, 255 };
-        auto bounds = std::make_shared<BoundingBoxComponent>(
-            Vector2{ x, 0.0f },
-            Vector2{ glb::WW / 7.0f, static_cast<float>(glb::WH) });
-        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, paddleW, paddleH });
-        auto input = std::make_shared<InputComponent>();
-        input->speed = 620.0f;
-
-        player->addComponent(transform);
-        player->addComponent(sprite);
-        player->addComponent(bounds);
-        player->addComponent(collision);
-        player->addComponent(input);
-    }
-
-    ball = std::make_shared<Entity>();
-    {
-        auto transform = std::make_shared<TransformComponent>();
-        auto sprite = std::make_shared<SpriteComponent>("ball", ballW, ballH);
-        sprite->tint = Color{ 255, 255, 255, 255 };
-        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, ballW, ballH });
-        auto ai = std::make_shared<AIComponent>(0.0f, false);
-
-        ball->addComponent(transform);
-        ball->addComponent(sprite);
-        ball->addComponent(collision);
-        ball->addComponent(ai);
-
-        CenterEntityInWorld(sprite, transform, static_cast<float>(glb::WW), static_cast<float>(glb::WH));
-    }
-
-    opponentPaddle = std::make_shared<Entity>();
-    {
-        const float leftX = glb::WW - (glb::WW / 7.0f);
-        const float rightX = static_cast<float>(glb::WW);
-        auto transform = std::make_shared<TransformComponent>(leftX, (glb::WH - paddleH) * 0.5f);
-        auto sprite = std::make_shared<SpriteComponent>("paddle", paddleW, paddleH);
-        sprite->tint = Color{ 255, 190, 190, 255 };
-        auto bounds = std::make_shared<BoundingBoxComponent>(
-            Vector2{ leftX, 0.0f },
-            Vector2{ rightX, static_cast<float>(glb::WH) });
-        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, paddleW, paddleH });
-        auto ai = std::make_shared<AIComponent>(520.0f, true);
-
-        opponentPaddle->addComponent(transform);
-        opponentPaddle->addComponent(sprite);
-        opponentPaddle->addComponent(bounds);
-        opponentPaddle->addComponent(collision);
-        opponentPaddle->addComponent(ai);
-
-        ClampToBounds(transform, sprite, bounds);
-    }
-
-    renderSystem.addEntity(ball);
-    renderSystem.addEntity(player);
-    renderSystem.addEntity(opponentPaddle);
-
-    inputSystem.addEntity(player);
-
-    aiSystem.addEntity(ball);
-    aiSystem.addEntity(opponentPaddle);
-
-    collisionSystem.addEntity(ball);
-    collisionSystem.addEntity(player);
-    collisionSystem.addEntity(opponentPaddle);
+//    player = std::make_shared<Entity>();
+//    {
+//        const float x = glb::WW / 7.0f - paddleW;
+//        auto transform = std::make_shared<TransformComponent>(x, (glb::WH - paddleH) * 0.5f);
+//        auto sprite = std::make_shared<SpriteComponent>("paddle", paddleW, paddleH);
+//        sprite->tint = Color{ 235, 235, 255, 255 };
+//        auto bounds = std::make_shared<BoundingBoxComponent>(
+//            Vector2{ x, 0.0f },
+//            Vector2{ glb::WW / 7.0f, static_cast<float>(glb::WH) });
+//        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, paddleW, paddleH });
+//        auto input = std::make_shared<InputComponent>();
+//        input->speed = 620.0f;
+//
+//        player->addComponent(transform);
+//        player->addComponent(sprite);
+//        player->addComponent(bounds);
+//        player->addComponent(collision);
+//        player->addComponent(input);
+//    }
+//
+//    ball = std::make_shared<Entity>();
+//    {
+//        auto transform = std::make_shared<TransformComponent>();
+//        auto sprite = std::make_shared<SpriteComponent>("ball", ballW, ballH);
+//        sprite->tint = Color{ 255, 255, 255, 255 };
+//        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, ballW, ballH });
+//        auto ai = std::make_shared<AIComponent>(0.0f, false);
+//
+//        ball->addComponent(transform);
+//        ball->addComponent(sprite);
+//        ball->addComponent(collision);
+//        ball->addComponent(ai);
+//
+//        CenterEntityInWorld(sprite, transform, static_cast<float>(glb::WW), static_cast<float>(glb::WH));
+//    }
+//
+//    opponentPaddle = std::make_shared<Entity>();
+//    {
+//        const float leftX = glb::WW - (glb::WW / 7.0f);
+//        const float rightX = static_cast<float>(glb::WW);
+//        auto transform = std::make_shared<TransformComponent>(leftX, (glb::WH - paddleH) * 0.5f);
+//        auto sprite = std::make_shared<SpriteComponent>("paddle", paddleW, paddleH);
+//        sprite->tint = Color{ 255, 190, 190, 255 };
+//        auto bounds = std::make_shared<BoundingBoxComponent>(
+//            Vector2{ leftX, 0.0f },
+//            Vector2{ rightX, static_cast<float>(glb::WH) });
+//        auto collision = std::make_shared<CollisionComponent>(Rectangle{ 0.0f, 0.0f, paddleW, paddleH });
+//        auto ai = std::make_shared<AIComponent>(520.0f, true);
+//
+//        opponentPaddle->addComponent(transform);
+//        opponentPaddle->addComponent(sprite);
+//        opponentPaddle->addComponent(bounds);
+//        opponentPaddle->addComponent(collision);
+//        opponentPaddle->addComponent(ai);
+//
+//        ClampToBounds(transform, sprite, bounds);
+//    }
+//
+//    renderSystem.addEntity(ball);
+//    renderSystem.addEntity(player);
+//    renderSystem.addEntity(opponentPaddle);
+//
+//    inputSystem.addEntity(player);
+//
+//    aiSystem.addEntity(ball);
+//    aiSystem.addEntity(opponentPaddle);
+//
+//    collisionSystem.addEntity(ball);
+//    collisionSystem.addEntity(player);
+//    collisionSystem.addEntity(opponentPaddle);
 }
 
 sfx::SoundManager &Game::getSoundMgr() {
@@ -306,4 +312,8 @@ sfx::SoundManager &Game::getSoundMgr() {
 
 void Game::Input() {
     gStateMgr->Input();
+}
+
+void Game::RenderUI() {
+    gStateMgr->RenderUI();
 }

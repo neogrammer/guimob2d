@@ -34,7 +34,7 @@ class GameStateMgr {
     bool isClearStopStateWaiting();
 
 
-    void readyUpState(gstate state, bool stackIt = false, bool updateClearStop = true, gstate nextClearState = gstate::None);
+
 public:
     GameStateMgr() = delete;
     GameStateMgr(Game& game);
@@ -43,9 +43,11 @@ public:
     void Input();
     void Update(float deltaTime);
     void Render();
+    void RenderUI();
 
 
     Game& getGame();
+    void readyUpState(gstate state, bool stackIt = false, bool updateClearStop = true, gstate nextClearState = gstate::None);
 
 
 };
