@@ -190,31 +190,6 @@ void WorkMapEditor::RecomputeOrigin()
     m_MapOrigin.y = m_MapOffset.y;
 }
 
-//}
-//void WorkMapEditor::RecomputeOrigin()
-//{
-//    if (!m_DrawIsometric)
-//    {
-//        m_MapOrigin.x = 0.0f;
-//        m_MapOrigin.y = 0.0f;
-//        return;
-//    }
-//
-//    const float tw = (float)m_TileSize;
-//    const float th = (float)m_TileSize;
-//
-//    const float a = tw * 0.5f;
-//    const float b = th * 0.25f;
-//
-//    const float totalWidth  = ((float)(m_MapWidth + m_MapHeight - 2) * a) + tw;
-//    const float totalHeight = ((float)(m_MapWidth + m_MapHeight - 2) * b) + th;
-//
-//    const float left = 0.f; ((float)GetScreenWidth()  - totalWidth)  * 0.5f;
-//    const float top  = 0.f; ((float)GetScreenHeight() - totalHeight) * 0.5f;
-//
-//    m_MapOrigin.x = left + ((float)(m_MapHeight - 1) * a);
-//    m_MapOrigin.y = top;
-//}
 void WorkMapEditor::ClampSelectedIndex()
 {
     m_SelectedIndex = std::clamp(m_SelectedIndex, 0, MaxTileIndex());
@@ -449,69 +424,6 @@ void WorkMapEditor::DrawEditorUI()
 
     ClampSelectedIndex();
 
-//    ImGui::Separator();
-//    ImGui::Text("Selected tile: %d", m_SelectedIndex);
-//    if (m_HasTilesetTexture)
-//    {
-//        Rectangle src = GetSrcRectForTile(m_SelectedIndex);
-//
-//        ImVec2 uv0(
-//                src.x / (float)m_TilesetTexture.width,
-//                src.y / (float)m_TilesetTexture.height
-//        );
-//
-//        ImVec2 uv1(
-//                (src.x + src.width) / (float)m_TilesetTexture.width,
-//                (src.y + src.height) / (float)m_TilesetTexture.height
-//        );
-//
-//        const ImVec2 previewSize(96.0f, 96.0f);
-//        const ImVec2 previewMin = ImGui::GetCursorScreenPos();
-//        const ImVec2 previewMax(previewMin.x + previewSize.x, previewMin.y + previewSize.y);
-//
-//        ImGui::InvisibleButton("##selected_tile_preview", previewSize);
-//
-//        ImDrawList* drawList = ImGui::GetWindowDrawList();
-//        drawList->AddImage(
-//                (ImTextureID)(intptr_t)m_TilesetTexture.id,
-//                previewMin,
-//                previewMax,
-//                uv0,
-//                uv1
-//        );
-//        drawList->AddRect(previewMin, previewMax, IM_COL32(255, 255, 255, 255), 0.0f, 0, 2.0f);
-//
-//        ImGui::Separator();
-//        ImGui::Text("Touch action:");
-//
-//        if (m_EraseMode)
-//        {
-//            if (ImGui::Button("Switch to PAINT", ImVec2(-1.0f, 44.0f)))
-//                m_EraseMode = false;
-//            ImGui::Text("Current mode: ERASE");
-//        }
-//        else
-//        {
-//            if (ImGui::Button("Switch to ERASE", ImVec2(-1.0f, 44.0f)))
-//                m_EraseMode = true;
-//            ImGui::Text("Current mode: PAINT");
-//        }
-//
-//        if (m_EraseMode)
-//            ImGui::TextWrapped("Dragging will erase tiles back to the default index.");
-//        else
-//            ImGui::TextWrapped("Dragging will paint the selected tile index.");
-//
-//
-//
-//        if (ImGui::IsItemHovered())
-//            ImGui::SetTooltip("Tap to choose a tile from the tilesheet");
-//
-//        if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-//            ImGui::OpenPopup("Tile Picker");
-//    }
-//
-//    DrawTilePickerPopup();
 
     ImGui::Separator();
     ImGui::Text("Selected tile: %d", m_SelectedIndex);
@@ -559,18 +471,9 @@ void WorkMapEditor::DrawEditorUI()
 
     DrawTilePickerPopup();
 
-  //  ImGui::Separator();
- //   ImGui::TextWrapped("Tap a map cell to paint the selected index.");
-//    ImGui::TextWrapped("Tap a cell already using that tile to erase it back to the default tile.");
-
     // Push the save section to the bottom of the editor window.
     const float saveButtonHeight = 56.0f;
     const float statusHeight = 44.0f;
-//    float remaining = ImGui::GetContentRegionAvail().y - saveButtonHeight - statusHeight;
-//    if (remaining > 0.0f)
-//        ImGui::Dummy(ImVec2(0.0f, remaining));
-//
-//    ImGui::Separator();
 
     if (m_DrawIsometric)
     {
@@ -746,70 +649,6 @@ void WorkMapEditor::HandlePanInput()
     }
 }
 
-//
-//void WorkMapEditor::HandlePaintInput()
-//{
-//    ImGuiIO& io = ImGui::GetIO();
-//
-//    if (m_IsPanning)
-//    {
-//        m_PointerWasDown = false;
-//        m_HasLastPaintPointer = false;
-//        return;
-//    }
-//
-//    bool pointerDown = false;
-//    Vector2 pointer{};
-//
-//    const int touchCount = GetTouchPointCount();
-//
-//    if (touchCount == 1)
-//    {
-//        pointer = GetTouchPosition(0);
-//        pointerDown = true;
-//    }
-//    else if (touchCount == 0 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-//    {
-//        pointer = GetMousePosition();
-//        pointerDown = true;
-//    }
-//
-//    if (io.WantCaptureMouse)
-//    {
-//        m_PointerWasDown = pointerDown;
-//        m_HasLastPaintPointer = false;
-//        return;
-//    }
-//
-//    if (pointerDown)
-//    {
-//        if (!m_PointerWasDown)
-//        {
-//            // Initial tap/down: paint immediately
-//            PaintAtScreen(pointer);
-//            m_LastPaintPointer = pointer;
-//            m_HasLastPaintPointer = true;
-//        }
-//        else
-//        {
-//            // Drag: fill in the whole stroke path
-//            if (m_HasLastPaintPointer)
-//                PaintStroke(m_LastPaintPointer, pointer);
-//            else
-//                PaintAtScreen(pointer);
-//
-//            m_LastPaintPointer = pointer;
-//            m_HasLastPaintPointer = true;
-//        }
-//    }
-//    else
-//    {
-//        m_HasLastPaintPointer = false;
-//    }
-//
-//    m_PointerWasDown = pointerDown;
-//}
-
 void WorkMapEditor::HandlePaintInput()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -876,60 +715,6 @@ void WorkMapEditor::HandlePaintInput()
 }
 
 
-
-//void WorkMapEditor::HandlePaintInput()
-//{
-//    ImGuiIO& io = ImGui::GetIO();
-//
-//    // If we're currently panning, do not also paint.
-//    if (m_IsPanning)
-//    {
-//        m_PointerWasDown = false;
-//        return;
-//    }
-//
-//    bool pointerDown = false;
-//    Vector2 pointer{};
-//
-//    const int touchCount = GetTouchPointCount();
-//
-//    // One-finger touch = paint
-//    if (touchCount == 1)
-//    {
-//        pointer = GetTouchPosition(0);
-//        pointerDown = true;
-//    }
-//        // Mouse left button = paint
-//    else if (touchCount == 0 && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-//    {
-//        pointer = GetMousePosition();
-//        pointerDown = true;
-//    }
-//
-//    if (io.WantCaptureMouse)
-//    {
-//        m_PointerWasDown = pointerDown;
-//        return;
-//    }
-//
-//    // Tap once = place/overwrite
-//    if (pointerDown && !m_PointerWasDown)
-//    {
-//        int cellX = 0;
-//        int cellY = 0;
-//
-//        if (ScreenToTile(pointer, cellX, cellY))
-//        {
-//            int& cell = m_Tiles[FlatIndex(cellX, cellY)];
-//
-//            cell = m_EraseMode ? m_DefaultIndex : m_SelectedIndex;
-//
-//
-//        }
-//    }
-//
-//    m_PointerWasDown = pointerDown;
-//}
 
 int WorkMapEditor::FillVisibleDefaultTiles()
 {
@@ -1157,3 +942,30 @@ void WorkMapEditor::DrawTilePickerPopup()
         ImGui::EndPopup();
     }
 }
+
+
+//}
+//void WorkMapEditor::RecomputeOrigin()
+//{
+//    if (!m_DrawIsometric)
+//    {
+//        m_MapOrigin.x = 0.0f;
+//        m_MapOrigin.y = 0.0f;
+//        return;
+//    }
+//
+//    const float tw = (float)m_TileSize;
+//    const float th = (float)m_TileSize;
+//
+//    const float a = tw * 0.5f;
+//    const float b = th * 0.25f;
+//
+//    const float totalWidth  = ((float)(m_MapWidth + m_MapHeight - 2) * a) + tw;
+//    const float totalHeight = ((float)(m_MapWidth + m_MapHeight - 2) * b) + th;
+//
+//    const float left = 0.f; ((float)GetScreenWidth()  - totalWidth)  * 0.5f;
+//    const float top  = 0.f; ((float)GetScreenHeight() - totalHeight) * 0.5f;
+//
+//    m_MapOrigin.x = left + ((float)(m_MapHeight - 1) * a);
+//    m_MapOrigin.y = top;
+//}

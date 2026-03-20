@@ -55,7 +55,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "AnalyzeApkAction.lastApkPath": "C:/dev/RaymobGames/Raymob1/raymob/app/build/intermediates/apk/debug/app-debug.apk",
-    "Android App.Raymob1.app.executor": "Run",
+    "Android App.Raymob1.app.executor": "Debug",
     "GradleDaemonJvmCriteriaMigrationNotification.isNotificationDisabled": "true",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -68,7 +68,7 @@
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/dev/RaymobGames/Raymob1/raymob/app/src/main/assets/textures",
+    "last_opened_file_path": "C:/dev/RaymobGames/Raymob1/raymob/app/src/main/assets/textures/tilesets",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.17",
     "project.structure.side.proportion": "0.2",
@@ -90,11 +90,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures\tilesets" />
+      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures\player" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\textures" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\music" />
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\sfx" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\music" />
-      <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\assets\audio\ui" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\dev\RaymobGames\Raymob1\raymob\app\src\main\cpp\audio" />
@@ -204,29 +204,6 @@
           </properties>
           <option name="timeStamp" value="3" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/app/src/main/cpp/game_states/TitleState.cpp</url>
-          <line>120</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/app/src/main/cpp/game_states/SplashState.cpp</url>
-          <line>104</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/app/src/main/cpp/game_states/SplashState.cpp</url>
-          <line>97</line>
-          <properties>
-            <option name="hitCountValue" value="1" />
-          </properties>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/app/src/main/cpp/Game.cpp</url>
-          <line>41</line>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

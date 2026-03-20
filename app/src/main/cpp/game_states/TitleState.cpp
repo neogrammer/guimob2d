@@ -92,9 +92,11 @@ void TitleState::drawMenuPanel()
             // getGStateMgr().readyUpState(gstate::Leaderboards);
         }
     }
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar(4);
     ImGui::End();
 
-    ImGui::PopStyleVar(4);
+
 }
 
 void TitleState::Render()

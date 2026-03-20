@@ -100,65 +100,10 @@ void Game::Render()
 
     gStateMgr->Render();
 
-   /* const auto bgIt = textures.find("background");
-    if (bgIt != textures.end() && bgIt->second.id != 0)
-    {
-        const Texture2D& bg = bgIt->second;
-        Rectangle src{ 0.0f, 0.0f, static_cast<float>(bg.width), static_cast<float>(bg.height) };
-        Rectangle dst{ 0.0f, 0.0f, static_cast<float>(glb::WW), static_cast<float>(glb::WH) };
-        DrawTexturePro(bg, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
-    }
-    else
-    {
-        DrawRectangleGradientV(0, 0, static_cast<int>(glb::WW), static_cast<int>(glb::WH),
-                               Color{ 10, 18, 36, 255 }, Color{ 0, 0, 0, 255 });
-    }*/
-
-    //DrawLine(static_cast<int>(glb::WW / 2), 0, static_cast<int>(glb::WW / 2), static_cast<int>(glb::WH), Color{ 255, 255, 255, 40 });
-    //DrawFPS(20, 20);
-
-
     renderSystem.render(textures);
 }
 
-void Game::SetPlayerMoveIntent(float x, float y)
-{
-//    if (!player)
-//    {
-//        return;
-//    }
-//
-//    auto input = player->getComponent<InputComponent>();
-//    if (input)
-//    {
-//        input->setMoveIntent(x, y);
-//    }
-}
 
-void Game::SetPlayerTouchY(float touchY)
-{
-//    if (!player)
-//    {
-//        return;
-//    }
-//
-//    auto transform = player->getComponent<TransformComponent>();
-//    auto sprite = player->getComponent<SpriteComponent>();
-//    auto bounds = player->getComponent<BoundingBoxComponent>();
-//    auto input = player->getComponent<InputComponent>();
-//    if (!transform || !sprite || !bounds)
-//    {
-//        return;
-//    }
-//
-//    if (input)
-//    {
-//        input->setMoveIntent(0.0f, 0.0f);
-//    }
-//
-//    transform->position.y = touchY - (sprite->size.y * 0.5f);
-//    ClampToBounds(transform, sprite, bounds);
-}
 
 Texture2D Game::TryLoadTexture(const char* primaryPath, const char* fallbackPath)
 {
@@ -200,17 +145,6 @@ std::unordered_map<std::string, Texture2D>& Game::getTextures()
 
 }
 
-void Game::loadTextures()
-{
-//    textures.emplace("paddle", LoadTexture("textures/paddle.png"));
-//    textures.emplace("ball", LoadTexture("textures/ball.png"));
-//    textures.emplace("background", LoadTexture("textures/background.png"));
-//
-//    TraceLog(LOG_INFO, "paddle id=%u w=%d h=%d", textures["paddle"].id, textures["paddle"].width, textures["paddle"].height);
-//    TraceLog(LOG_INFO, "ball id=%u w=%d h=%d", textures["ball"].id, textures["ball"].width, textures["ball"].height);
-//    TraceLog(LOG_INFO, "background id=%u w=%d h=%d", textures["background"].id, textures["background"].width, textures["background"].height);
-}
-
 void Game::unloadTextures()
 {
     for (auto& [name, texture] : textures)
@@ -223,6 +157,20 @@ void Game::unloadTextures()
         }
     }
 }
+
+
+sfx::SoundManager &Game::getSoundMgr() {
+    return *soundManager;
+}
+
+void Game::Input() {
+    gStateMgr->Input();
+}
+
+void Game::RenderUI() {
+    gStateMgr->RenderUI();
+}
+
 
 void Game::createEntities()
 {
@@ -306,14 +254,73 @@ void Game::createEntities()
 //    collisionSystem.addEntity(opponentPaddle);
 }
 
-sfx::SoundManager &Game::getSoundMgr() {
-    return *soundManager;
+
+void Game::loadTextures()
+{
+//    textures.emplace("paddle", LoadTexture("textures/paddle.png"));
+//    textures.emplace("ball", LoadTexture("textures/ball.png"));
+//    textures.emplace("background", LoadTexture("textures/background.png"));
+//
+//    TraceLog(LOG_INFO, "paddle id=%u w=%d h=%d", textures["paddle"].id, textures["paddle"].width, textures["paddle"].height);
+//    TraceLog(LOG_INFO, "ball id=%u w=%d h=%d", textures["ball"].id, textures["ball"].width, textures["ball"].height);
+//    TraceLog(LOG_INFO, "background id=%u w=%d h=%d", textures["background"].id, textures["background"].width, textures["background"].height);
 }
 
-void Game::Input() {
-    gStateMgr->Input();
+void Game::SetPlayerMoveIntent(float x, float y)
+{
+//    if (!player)
+//    {
+//        return;
+//    }
+//
+//    auto input = player->getComponent<InputComponent>();
+//    if (input)
+//    {
+//        input->setMoveIntent(x, y);
+//    }
 }
 
-void Game::RenderUI() {
-    gStateMgr->RenderUI();
+void Game::SetPlayerTouchY(float touchY)
+{
+//    if (!player)
+//    {
+//        return;
+//    }
+//
+//    auto transform = player->getComponent<TransformComponent>();
+//    auto sprite = player->getComponent<SpriteComponent>();
+//    auto bounds = player->getComponent<BoundingBoxComponent>();
+//    auto input = player->getComponent<InputComponent>();
+//    if (!transform || !sprite || !bounds)
+//    {
+//        return;
+//    }
+//
+//    if (input)
+//    {
+//        input->setMoveIntent(0.0f, 0.0f);
+//    }
+//
+//    transform->position.y = touchY - (sprite->size.y * 0.5f);
+//    ClampToBounds(transform, sprite, bounds);
 }
+
+
+
+// REnder
+/* const auto bgIt = textures.find("background");
+    if (bgIt != textures.end() && bgIt->second.id != 0)
+    {
+        const Texture2D& bg = bgIt->second;
+        Rectangle src{ 0.0f, 0.0f, static_cast<float>(bg.width), static_cast<float>(bg.height) };
+        Rectangle dst{ 0.0f, 0.0f, static_cast<float>(glb::WW), static_cast<float>(glb::WH) };
+        DrawTexturePro(bg, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
+    }
+    else
+    {
+        DrawRectangleGradientV(0, 0, static_cast<int>(glb::WW), static_cast<int>(glb::WH),
+                               Color{ 10, 18, 36, 255 }, Color{ 0, 0, 0, 255 });
+    }*/
+
+//DrawLine(static_cast<int>(glb::WW / 2), 0, static_cast<int>(glb::WW / 2), static_cast<int>(glb::WH), Color{ 255, 255, 255, 40 });
+//DrawFPS(20, 20);

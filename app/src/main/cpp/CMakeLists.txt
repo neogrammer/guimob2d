@@ -65,6 +65,8 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/audio/GameAudio.cpp
 
     ${CMAKE_SOURCE_DIR}/input/TouchInput.cpp
+
+    ${CMAKE_SOURCE_DIR}/UI/DebugModal.cpp
 )
 
 
