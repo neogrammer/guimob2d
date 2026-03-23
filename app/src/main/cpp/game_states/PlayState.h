@@ -6,8 +6,10 @@
 #define RAYMOB1_PLAYSTATE_H
 
 #include "../GameState.h"
+#include "../World/tmap/Tile.h"
 
 class PlayState : public GameState {
+    map::Tile tile;
 public:
     void Enter() override final;
     void Leave() override final;

@@ -7,8 +7,8 @@
 
 PlayState::PlayState(GameStateMgr& gStateMgr)
         : GameState{gStateMgr}
+        , tile{}
 {
-
 }
 
 PlayState::~PlayState()

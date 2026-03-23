@@ -67,6 +67,11 @@ set(SOURCES
     ${CMAKE_SOURCE_DIR}/input/TouchInput.cpp
 
     ${CMAKE_SOURCE_DIR}/UI/DebugModal.cpp
+
+    ${CMAKE_SOURCE_DIR}/World/tmap/Tile.cpp
+    ${CMAKE_SOURCE_DIR}/World/tmap/Tileset.cpp
+    ${CMAKE_SOURCE_DIR}/World/tmap/Tilemap.cpp
+
 )
 
 
