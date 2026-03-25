@@ -1,0 +1,17 @@
+# map width
+8
+# map height
+6
+# placed tile width
+32
+# placed tile height
+32
+# tileset file this map uses
+tset1.tst
+# tile indices block (48 values)
+0 0 0 0 0 0 0 0
+0 1 1 1 1 1 1 0
+0 1 2 2 2 2 1 0
+0 1 2 3 3 2 1 0
+0 1 1 1 1 1 1 0
+0 0 0 0 0 0 0 0

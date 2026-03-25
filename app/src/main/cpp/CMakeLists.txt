@@ -68,9 +68,9 @@ set(SOURCES
 
     ${CMAKE_SOURCE_DIR}/UI/DebugModal.cpp
 
-    ${CMAKE_SOURCE_DIR}/World/tmap/Tile.cpp
-    ${CMAKE_SOURCE_DIR}/World/tmap/Tileset.cpp
-    ${CMAKE_SOURCE_DIR}/World/tmap/Tilemap.cpp
+    ${CMAKE_SOURCE_DIR}/World/tilemap/Tile.cpp
+    ${CMAKE_SOURCE_DIR}/World/tilemap/Tileset.cpp
+    ${CMAKE_SOURCE_DIR}/World/tilemap/Tilemap.cpp
 
 )
 

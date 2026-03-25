@@ -7,7 +7,7 @@
 
 PlayState::PlayState(GameStateMgr& gStateMgr)
         : GameState{gStateMgr}
-        , tile{}
+        , tilemap{"tset1.tst", "tmap1.map" }
 {
 }
 
@@ -27,7 +27,7 @@ void PlayState::Update(float deltaTime)
 
 void PlayState::Render()
 {
-
+    tilemap.RenderMap();
 }
 
 void PlayState::Enter() {
